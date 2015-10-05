@@ -2,9 +2,12 @@ package com.lucene.action.searching;
 
 import com.lucene.action.util.TestUtil;
 import junit.framework.*;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.slf4j.Logger;
@@ -38,8 +41,37 @@ public class BasicSearchingTest extends TestCase {
 
 
         for(ScoreDoc doc : docs.scoreDocs) {
-            logger.info("score doc => {}", doc.toString());
+            Document d = searcher.doc(doc.doc);
+            logger.info("score doc => title: {}, subject: {}", d.get("title"), d.get("subject"));
         }
+
+        reader.close();
+        dir.close();
+    }
+
+    public void testQueryParser() throws Exception {
+        Directory dir = TestUtil.getBookIndexDirectory();
+        IndexReader reader = DirectoryReader.open(dir);
+
+        IndexSearcher searcher = new IndexSearcher(reader);
+
+        QueryParser parser = new QueryParser("contents", new StandardAnalyzer());;
+
+        Query query = parser.parse("+JUNIT +ANT -MOCK");
+        TopDocs docs = searcher.search(query, 10);
+
+        assertEquals(1, docs.totalHits);
+
+        Document d = searcher.doc(docs.scoreDocs[0].doc);
+
+        assertEquals("Ant in Action", d.get("title"));
+
+        query = parser.parse("mock OR junit");
+        docs = searcher.search(query, 10);
+
+        assertEquals("Ant in Action, " +
+                    "JUnit in Action, Second Edition",
+                    2, docs.totalHits);
 
         reader.close();
         dir.close();
