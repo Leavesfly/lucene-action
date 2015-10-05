@@ -1,7 +1,20 @@
+# Mac
 .DS_Store
+
+# IntelliJ
 *.iml
 .idea/
 target/
+
+# sample data & indexing files
 data/
 indexes/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Tutorial data
+src/main/java/com/lucene/action/meetlucene/data
 

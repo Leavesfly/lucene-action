@@ -1,5 +1,7 @@
 package com.lucene.action.common;
 
+import com.lucene.action.custom.field.VecStringField;
+import com.lucene.action.custom.field.VecTextField;
 import com.lucene.action.util.Const;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
@@ -106,17 +108,17 @@ public class CreateTestIndex {
 
         doc.add(new StringField("isbn", isbn, Field.Store.YES));
         doc.add(new StringField("category", category, Field.Store.YES));
-        doc.add(new TextField("title", title, Field.Store.YES));  // Field.TermVector.WITH_POSITIONS_OFFSETS
-        doc.add(new StringField("title2", title.toLowerCase(), Field.Store.YES)); // Field.Index.NOT_ANALYZED_NO_NORMS, Field.TermVector.WITH_POSITIONS_OFFSETS
+        doc.add(new VecTextField("title", title, Field.Store.YES));  // Field.TermVector.WITH_POSITIONS_OFFSETS
+        doc.add(new StoredField("title2", title.toLowerCase())); // Field.Index.NOT_ANALYZED_NO_NORMS, Field.TermVector.WITH_POSITIONS_OFFSETS
 
         // split multiple authors into unique field instances
         String[] authors = author.split(",");
         for (String auth : authors) {
-            doc.add(new StringField("author", auth, Field.Store.YES));  // Field.TermVector.WITH_POSITIONS_OFFSETS
+            doc.add(new VecStringField("author", auth, Field.Store.YES));  // Field.TermVector.WITH_POSITIONS_OFFSETS
         }
 
-        doc.add(new StringField("url", url, Field.Store.YES)); // Field.Index.NOT_ANALYZED_NO_NORMS
-        doc.add(new TextField("subject", subject, Field.Store.YES)); // Field.TermVector.WITH_POSITIONS_OFFSETS
+        doc.add(new StoredField("url", url)); // Field.Index.NOT_ANALYZED_NO_NORMS
+        doc.add(new VecTextField("subject", subject, Field.Store.YES)); // Field.TermVector.WITH_POSITIONS_OFFSETS
 
         doc.add(new NumericDocValuesField("pubmonth", Long.parseLong(pubmonth)));
         // doc.add(new NumericField("pubmonth", Field.Store.YES, true).setIntValue(Integer.parseInt(pubmonth)));
@@ -132,7 +134,7 @@ public class CreateTestIndex {
         // doc.add(new NumericField("pubmonthAsDay").setIntValue((int) (d.getTime()/(1000*3600*24))));
 
         for(String text : new String[] {title, subject, author, category}) {
-            doc.add(new TextField("contents", text, Field.Store.NO)); // Field.TermVector.WITH_POSITIONS_OFFSETS
+            doc.add(new VecTextField("contents", text, Field.Store.NO)); // Field.TermVector.WITH_POSITIONS_OFFSETS
         }
 
         return doc;
