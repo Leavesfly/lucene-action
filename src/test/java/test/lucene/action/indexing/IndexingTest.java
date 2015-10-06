@@ -57,7 +57,7 @@ public class IndexingTest {
             doc.add(new TextField("contents", unstored[i], Field.Store.NO));
 
             //before: new Field("city", text[i], Fiedl.Store.YES, Field.Index.ANALYZED);
-            doc.add(new TextField("city", text[i], Field.Store.YES));
+            doc.add(new StringField("city", text[i], Field.Store.YES));
 
             writer.addDocument(doc);
             logger.info("doc => {}",doc);
@@ -136,8 +136,8 @@ public class IndexingTest {
 
         Document doc = new Document();
         doc.add(new StringField("id", "1", Field.Store.YES));
-        doc.add(new StringField("country", "Netherlands", Field.Store.YES));
-        doc.add(new StringField("contents", "Den Haag has a lot of museums", Field.Store.NO));
+        doc.add(new StoredField("country", "Netherlands"));
+        doc.add(new TextField("contents", "Den Haag has a lot of museums", Field.Store.NO));
         doc.add(new StringField("city", "Den Haag", Field.Store.YES));
 
         writer.updateDocument(new Term("id","1"), doc);
