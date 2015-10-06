@@ -1,24 +1,33 @@
-package com.lucene.action.indexing;
+package test.lucene.action.indexing;
 
-import com.lucene.action.util.TestUtil;
-import junit.framework.*;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.document.*;
-import org.apache.lucene.index.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import com.lucene.action.util.TestUtil;
 
-/**
- * Created by enosent on 2015. 9. 30..
- */
-public class IndexingTest extends TestCase  {
+public class IndexingTest {
 
     private static final Logger logger = LoggerFactory.getLogger(IndexingTest.class);
 
@@ -26,10 +35,11 @@ public class IndexingTest extends TestCase  {
     protected String[] unindexed = {"Netherlands", "Italy"};
     protected String[] unstored = {"Amsterdam has lots of bridges", "Venice has lots of canals"};
     protected String[] text = {"Amsterdam", "Venice"};
-
+    
     private Directory directory;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         directory = new RAMDirectory();
 
         IndexWriter writer = getWriter();
@@ -55,7 +65,7 @@ public class IndexingTest extends TestCase  {
 
         writer.close();
     }
-
+    
     private IndexWriter getWriter() throws IOException {
         WhitespaceAnalyzer analyzer = new WhitespaceAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
@@ -65,7 +75,7 @@ public class IndexingTest extends TestCase  {
         return new IndexWriter(directory, config);
     }
 
-    protected int getHitCount(String fieldName, String searchString) throws IOException {
+    private int getHitCount(String fieldName, String searchString) throws IOException {
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
 
@@ -78,7 +88,8 @@ public class IndexingTest extends TestCase  {
 
         return hitCount;
     }
-
+    
+    @Test
     public void testIndexWriter() throws IOException {
         IndexWriter writer = getWriter();
 
@@ -88,6 +99,7 @@ public class IndexingTest extends TestCase  {
         writer.close();
     }
 
+    @Test
     public void testIndexReader() throws IOException {
         IndexReader reader = DirectoryReader.open(directory);
 
@@ -101,6 +113,7 @@ public class IndexingTest extends TestCase  {
         reader.close();
     }
 
+    @Test
     public void testDeleteBeforeOptimize() throws IOException {
         IndexWriter writer = getWriter();
         assertEquals(2, writer.numDocs());
@@ -115,6 +128,7 @@ public class IndexingTest extends TestCase  {
         writer.close();
     }
 
+    @Test
     public void testUpdate() throws IOException {
         assertEquals(1, getHitCount("city", "Amsterdam"));
 
