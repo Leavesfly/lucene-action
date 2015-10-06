@@ -120,7 +120,7 @@ public class CreateTestIndex {
         doc.add(new StoredField("url", url)); // Field.Index.NOT_ANALYZED_NO_NORMS
         doc.add(new VecTextField("subject", subject, Field.Store.YES)); // Field.TermVector.WITH_POSITIONS_OFFSETS
 
-        doc.add(new NumericDocValuesField("pubmonth", Long.parseLong(pubmonth)));
+        doc.add(new IntField("pubmonth", Integer.parseInt(pubmonth), Field.Store.YES));
         // doc.add(new NumericField("pubmonth", Field.Store.YES, true).setIntValue(Integer.parseInt(pubmonth)));
 
         Date date;
@@ -130,7 +130,7 @@ public class CreateTestIndex {
             throw new RuntimeException(pe); // 3
         }
 
-        doc.add(new NumericDocValuesField("pubmonthAsDay", (date.getTime()/(1000*3600*24))));
+        doc.add(new IntField("pubmonthAsDay", (int) (date.getTime()/(1000*3600*24)), Field.Store.NO));
         // doc.add(new NumericField("pubmonthAsDay").setIntValue((int) (d.getTime()/(1000*3600*24))));
 
         for(String text : new String[] {title, subject, author, category}) {
