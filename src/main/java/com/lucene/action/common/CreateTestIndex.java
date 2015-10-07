@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ public class CreateTestIndex {
         logger.info("{}  books to index", results.size());
 
         IndexWriterConfig config = new IndexWriterConfig(new MyStandardAnalyzer());
+        config.setOpenMode(OpenMode.CREATE);
 
         Path path = Paths.get(Const.OUTPUT_PATH);
         Directory dir = FSDirectory.open(path);
