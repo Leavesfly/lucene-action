@@ -111,7 +111,7 @@ public class CreateTestIndex {
         doc.add(new StringField("isbn", isbn, Field.Store.YES));
         doc.add(new StringField("category", category, Field.Store.YES));
         doc.add(new VecTextField("title", title, Field.Store.YES));  // Field.TermVector.WITH_POSITIONS_OFFSETS
-        doc.add(new StoredField("title2", title.toLowerCase())); // Field.Index.NOT_ANALYZED_NO_NORMS, Field.TermVector.WITH_POSITIONS_OFFSETS
+        doc.add(new StringField("title2", title.toLowerCase(), Field.Store.YES)); // Field.Index.NOT_ANALYZED_NO_NORMS, Field.TermVector.WITH_POSITIONS_OFFSETS
 
         // split multiple authors into unique field instances
         String[] authors = author.split(",");
