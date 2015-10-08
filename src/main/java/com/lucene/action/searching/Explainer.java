@@ -14,31 +14,31 @@ import org.apache.lucene.store.Directory;
  */
 public class Explainer {
 
-    public static void main(String[] args) throws Exception {
-        Directory dir = TestUtil.getBookIndexDirectory();
-        QueryParser parser = new QueryParser("contents", new WhitespaceAnalyzer());
+	public static void main(String[] args) throws Exception {
+		Directory dir = TestUtil.getBookIndexDirectory();
+		QueryParser parser = new QueryParser("contents", new WhitespaceAnalyzer());
 
-        Query query = parser.parse("junit");
+		Query query = parser.parse("junit");
 
-        System.out.println("Query: " + query);
+		System.out.println("Query: " + query);
 
-        IndexReader reader = DirectoryReader.open(dir);
-        IndexSearcher searcher = new IndexSearcher(reader);
+		IndexReader reader = DirectoryReader.open(dir);
+		IndexSearcher searcher = new IndexSearcher(reader);
 
-        TopDocs topDocs = searcher.search(query, 10);
+		TopDocs topDocs = searcher.search(query, 10);
 
-        for(ScoreDoc match : topDocs.scoreDocs) {
-            Explanation explanation = searcher.explain(query, match.doc);
+		for(ScoreDoc match : topDocs.scoreDocs) {
+			Explanation explanation = searcher.explain(query, match.doc);
 
-            System.out.println("----------");
+			System.out.println("----------");
 
-            Document doc = searcher.doc(match.doc);
-            System.out.println(doc.get("title"));
-            System.out.println(explanation.toString());
-        }
+			Document doc = searcher.doc(match.doc);
+			System.out.println(doc.get("title"));
+			System.out.println(explanation.toString());
+		}
 
-        reader.close();
-        dir.close();
-    }
+		reader.close();
+		dir.close();
+	}
 
 }

@@ -24,13 +24,13 @@ public class TestUtil {
 	public static boolean hitsIncludeTitle(IndexSearcher searcher, TopDocs hits, String title) throws IOException {
 		for (ScoreDoc match : hits.scoreDocs) {
 			Document doc = searcher.doc(match.doc);
-			
+
 			logger.info("title => {}", doc.get("title"));
 			if (title.equals(doc.get("title"))) {
 				return true;
 			}
 		}
-		
+
 		logger.info("title '{}' not found", title);
 		return false;
 	}

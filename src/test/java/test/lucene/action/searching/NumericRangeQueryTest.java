@@ -41,7 +41,7 @@ public class NumericRangeQueryTest {
 		IndexReader reader = DirectoryReader.open(directory);
 
 		IndexSearcher searcher = new IndexSearcher(reader);
-		
+
 		NumericRangeQuery<Integer> query = NumericRangeQuery.newIntRange("pubmonth", 200605, 200609, false, false);
 
 		TopDocs matches = searcher.search(query, 10);

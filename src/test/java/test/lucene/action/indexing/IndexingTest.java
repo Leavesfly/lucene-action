@@ -29,123 +29,123 @@ import com.lucene.action.util.TestUtil;
 
 public class IndexingTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexingTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(IndexingTest.class);
 
-    protected String[] ids = {"1", "2"};
-    protected String[] unindexed = {"Netherlands", "Italy"};
-    protected String[] unstored = {"Amsterdam has lots of bridges", "Venice has lots of canals"};
-    protected String[] text = {"Amsterdam", "Venice"};
-    
-    private Directory directory;
+	protected String[] ids = {"1", "2"};
+	protected String[] unindexed = {"Netherlands", "Italy"};
+	protected String[] unstored = {"Amsterdam has lots of bridges", "Venice has lots of canals"};
+	protected String[] text = {"Amsterdam", "Venice"};
 
-    @Before
-    public void setUp() throws Exception {
-        directory = new RAMDirectory();
+	private Directory directory;
 
-        IndexWriter writer = getWriter();
+	@Before
+	public void setUp() throws Exception {
+		directory = new RAMDirectory();
 
-        for(int i = 0; i < ids.length; i++) {
-            Document doc = new Document();
+		IndexWriter writer = getWriter();
 
-            //before: new Field("id", idx[i], Fiedl.Store.YES, Field.Index.NOT_ANALYZED);
-            doc.add(new StringField("id", ids[i], Field.Store.YES));
+		for(int i = 0; i < ids.length; i++) {
+			Document doc = new Document();
 
-            //before: new Field("country", unindexed[i], Fiedl.Store.YES, Field.Index.NO);
-            doc.add(new StoredField("country", unindexed[i]));
+			//before: new Field("id", idx[i], Fiedl.Store.YES, Field.Index.NOT_ANALYZED);
+			doc.add(new StringField("id", ids[i], Field.Store.YES));
 
-            //before: new Field("contents", unstored[i], Fiedl.Store.NO, Field.Index.ANALYZED);
-            doc.add(new TextField("contents", unstored[i], Field.Store.NO));
+			//before: new Field("country", unindexed[i], Fiedl.Store.YES, Field.Index.NO);
+			doc.add(new StoredField("country", unindexed[i]));
 
-            //before: new Field("city", text[i], Fiedl.Store.YES, Field.Index.ANALYZED);
-            doc.add(new StringField("city", text[i], Field.Store.YES));
+			//before: new Field("contents", unstored[i], Fiedl.Store.NO, Field.Index.ANALYZED);
+			doc.add(new TextField("contents", unstored[i], Field.Store.NO));
 
-            writer.addDocument(doc);
-            logger.info("doc => {}",doc);
-        }
+			//before: new Field("city", text[i], Fiedl.Store.YES, Field.Index.ANALYZED);
+			doc.add(new StringField("city", text[i], Field.Store.YES));
 
-        writer.close();
-    }
-    
-    private IndexWriter getWriter() throws IOException {
-        WhitespaceAnalyzer analyzer = new WhitespaceAnalyzer();
-        IndexWriterConfig config = new IndexWriterConfig(analyzer);
-        config.setInfoStream(System.out);
-        //logger.info("index writer config => {}", config.toString());
+			writer.addDocument(doc);
+			logger.info("doc => {}",doc);
+		}
 
-        return new IndexWriter(directory, config);
-    }
+		writer.close();
+	}
 
-    private int getHitCount(String fieldName, String searchString) throws IOException {
-        IndexReader reader = DirectoryReader.open(directory);
-        IndexSearcher searcher = new IndexSearcher(reader);
+	private IndexWriter getWriter() throws IOException {
+		WhitespaceAnalyzer analyzer = new WhitespaceAnalyzer();
+		IndexWriterConfig config = new IndexWriterConfig(analyzer);
+		config.setInfoStream(System.out);
+		//logger.info("index writer config => {}", config.toString());
 
-        Term t = new Term(fieldName, searchString);
-        Query query = new TermQuery(t);
+		return new IndexWriter(directory, config);
+	}
 
-        int hitCount = TestUtil.hitCount(searcher, query);
+	private int getHitCount(String fieldName, String searchString) throws IOException {
+		IndexReader reader = DirectoryReader.open(directory);
+		IndexSearcher searcher = new IndexSearcher(reader);
 
-        reader.close();
+		Term t = new Term(fieldName, searchString);
+		Query query = new TermQuery(t);
 
-        return hitCount;
-    }
-    
-    @Test
-    public void testIndexWriter() throws IOException {
-        IndexWriter writer = getWriter();
+		int hitCount = TestUtil.hitCount(searcher, query);
 
-        logger.info("numDocs => {}", writer.numDocs());
+		reader.close();
 
-        assertEquals(ids.length, writer.numDocs());
-        writer.close();
-    }
+		return hitCount;
+	}
 
-    @Test
-    public void testIndexReader() throws IOException {
-        IndexReader reader = DirectoryReader.open(directory);
+	@Test
+	public void testIndexWriter() throws IOException {
+		IndexWriter writer = getWriter();
 
-        logger.info("max doc => {}, numDocs => {}", reader.maxDoc(), reader.numDocs());
+		logger.info("numDocs => {}", writer.numDocs());
 
-        //logger.info("doc => {}", reader.document(0));
+		assertEquals(ids.length, writer.numDocs());
+		writer.close();
+	}
 
-        assertEquals(ids.length, reader.maxDoc());
-        assertEquals(ids.length, reader.numDocs());
+	@Test
+	public void testIndexReader() throws IOException {
+		IndexReader reader = DirectoryReader.open(directory);
 
-        reader.close();
-    }
+		logger.info("max doc => {}, numDocs => {}", reader.maxDoc(), reader.numDocs());
 
-    @Test
-    public void testDeleteBeforeOptimize() throws IOException {
-        IndexWriter writer = getWriter();
-        assertEquals(2, writer.numDocs());
+		//logger.info("doc => {}", reader.document(0));
 
-        writer.deleteDocuments(new Term("id", "1"));
-        writer.commit();
+		assertEquals(ids.length, reader.maxDoc());
+		assertEquals(ids.length, reader.numDocs());
 
-        assertTrue(writer.hasDeletions());
-        assertEquals(2, writer.maxDoc());
-        assertEquals(1, writer.numDocs());
+		reader.close();
+	}
 
-        writer.close();
-    }
+	@Test
+	public void testDeleteBeforeOptimize() throws IOException {
+		IndexWriter writer = getWriter();
+		assertEquals(2, writer.numDocs());
 
-    @Test
-    public void testUpdate() throws IOException {
-        assertEquals(1, getHitCount("city", "Amsterdam"));
+		writer.deleteDocuments(new Term("id", "1"));
+		writer.commit();
 
-        IndexWriter writer = getWriter();
+		assertTrue(writer.hasDeletions());
+		assertEquals(2, writer.maxDoc());
+		assertEquals(1, writer.numDocs());
 
-        Document doc = new Document();
-        doc.add(new StringField("id", "1", Field.Store.YES));
-        doc.add(new StoredField("country", "Netherlands"));
-        doc.add(new TextField("contents", "Den Haag has a lot of museums", Field.Store.NO));
-        doc.add(new StringField("city", "Den Haag", Field.Store.YES));
+		writer.close();
+	}
 
-        writer.updateDocument(new Term("id","1"), doc);
+	@Test
+	public void testUpdate() throws IOException {
+		assertEquals(1, getHitCount("city", "Amsterdam"));
 
-        writer.close();
+		IndexWriter writer = getWriter();
 
-        assertEquals(0, getHitCount("city", "Amsterdam"));
-        assertEquals(1, getHitCount("city", "Den Haag"));
-    }
+		Document doc = new Document();
+		doc.add(new StringField("id", "1", Field.Store.YES));
+		doc.add(new StoredField("country", "Netherlands"));
+		doc.add(new TextField("contents", "Den Haag has a lot of museums", Field.Store.NO));
+		doc.add(new StringField("city", "Den Haag", Field.Store.YES));
+
+		writer.updateDocument(new Term("id","1"), doc);
+
+		writer.close();
+
+		assertEquals(0, getHitCount("city", "Amsterdam"));
+		assertEquals(1, getHitCount("city", "Den Haag"));
+	}
 
 }

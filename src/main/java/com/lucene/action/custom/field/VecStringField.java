@@ -16,18 +16,18 @@ public class VecStringField extends Field {
 	public static final FieldType TYPE_STORED = new FieldType();
 
 	static {
-	    TYPE_NOT_STORED.setOmitNorms(true);
-	    TYPE_NOT_STORED.setIndexOptions(IndexOptions.DOCS);
-	    TYPE_NOT_STORED.setTokenized(false);
+		TYPE_NOT_STORED.setOmitNorms(true);
+		TYPE_NOT_STORED.setIndexOptions(IndexOptions.DOCS);
+		TYPE_NOT_STORED.setTokenized(false);
 		TYPE_NOT_STORED.setStoreTermVectors(true);
 		TYPE_NOT_STORED.setStoreTermVectorPositions(true);
 		TYPE_NOT_STORED.setStoreTermVectorOffsets(true);
 		TYPE_NOT_STORED.freeze();
 
-	    TYPE_STORED.setOmitNorms(true);
-	    TYPE_STORED.setIndexOptions(IndexOptions.DOCS);
-	    TYPE_STORED.setStored(true);
-	    TYPE_STORED.setTokenized(false);
+		TYPE_STORED.setOmitNorms(true);
+		TYPE_STORED.setIndexOptions(IndexOptions.DOCS);
+		TYPE_STORED.setStored(true);
+		TYPE_STORED.setTokenized(false);
 		TYPE_STORED.setStoreTermVectors(true);
 		TYPE_STORED.setStoreTermVectorPositions(true);
 		TYPE_STORED.setStoreTermVectorOffsets(true);

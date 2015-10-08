@@ -18,21 +18,21 @@ public class TermRangeQueryTest {
 	public void testTermRangeQuery() throws Exception {
 		Directory dir = TestUtil.getBookIndexDirectory();
 		IndexReader reader = DirectoryReader.open(dir);
-		
+
 		IndexSearcher searcher = new IndexSearcher(reader);
-		
+
 		TermRangeQuery query = TermRangeQuery.newStringRange("title2", "d", "j", true, true);
-		
-	    TopDocs matches = searcher.search(query, 100);
 
-	    for(int i=0;i<matches.totalHits;i++) {
-	      System.out.println("match " + i + ": " + searcher.doc(matches.scoreDocs[i].doc).get("title2"));
-	    }
+		TopDocs matches = searcher.search(query, 100);
 
-	    assertEquals(3, matches.totalHits);
-	    
-	    reader.close();
-	    dir.close();
+		for(int i=0;i<matches.totalHits;i++) {
+			System.out.println("match " + i + ": " + searcher.doc(matches.scoreDocs[i].doc).get("title2"));
+		}
+
+		assertEquals(3, matches.totalHits);
+
+		reader.close();
+		dir.close();
 	}
 
 }

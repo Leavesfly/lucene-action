@@ -27,7 +27,7 @@ public class NearRealTimeTest {
 
 		IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
 		config.setInfoStream(System.out);
-		
+
 		IndexWriter writer = new IndexWriter(dir, config);
 
 		for(int i = 0; i < 10; i++) {
@@ -57,18 +57,18 @@ public class NearRealTimeTest {
 		DirectoryReader newReader = DirectoryReader.openIfChanged(reader, writer, true); // reader.reopen(); - Deprecate..
 		assertFalse(reader == newReader);      
 		reader.close();     
-		
+
 		searcher = new IndexSearcher(newReader);
-		
+
 		TopDocs hits = searcher.search(query, 10);
-		
+
 		assertEquals(9, hits.totalHits); 
 		// assertEquals(9, hits.totalHits); - Failure  java.lang.AssertionError: expected:<9> but was:<10> StoreField 로 지정한 대상을 StringField 변경하니 오류 없음 ..
 
-	    query = new TermQuery(new Term("text", "bbb")); 
-	    hits = searcher.search(query, 1);    
-	    assertEquals(1, hits.totalHits); 
-	    
+		query = new TermQuery(new Term("text", "bbb")); 
+		hits = searcher.search(query, 1);    
+		assertEquals(1, hits.totalHits); 
+
 		newReader.close();
 		writer.close();
 	}
