@@ -6,8 +6,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -17,7 +17,7 @@ import java.io.StringReader;
  */
 public class AnalyzerUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(AnalyzerUtils.class);
+//    private static final Logger logger = LoggerFactory.getLogger(AnalyzerUtils.class);
 
     public static void displayPositionIncrements(Analyzer analyzer, String text) throws IOException {
         TokenStream stream = analyzer.tokenStream("contents", new StringReader(text));
@@ -69,5 +69,28 @@ public class AnalyzerUtils {
 
             System.out.println();
         }
+    }
+    
+    public static void displayTokensWithPositions(Analyzer analyzer, String text) throws IOException {
+    	TokenStream stream = analyzer.tokenStream("contents", new StringReader(text));
+    	
+    	CharTermAttribute term = stream.addAttribute(CharTermAttribute.class);
+    	PositionIncrementAttribute posIncr = stream.addAttribute(PositionIncrementAttribute.class);
+    	
+    	int postion = 0;
+    	
+    	stream.reset();
+    	while(stream.incrementToken()) {
+    		int increment = posIncr.getPositionIncrement();
+    		
+    		if(increment > 0) {
+    			postion = postion + increment;
+    			System.out.println();
+    			System.out.print(postion + ": ");
+    		}
+    		
+    		System.out.print("[" + term.toString() + "] ");
+    	}
+    	System.out.println();
     }
 }
