@@ -1,11 +1,6 @@
 package com.lucene.action.meetlucene;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -30,15 +25,17 @@ public class Indexer {
 
 	public static void main(String[] args) throws Exception {
 
-		String indexDir = Const.OUTPUT_PATH + "/MeetLucene";
-		String dataDir = Const.INPUT_PATH + "/meetlucene/data";
+		String indexDir = Const.OUTPUT_PATH;
+		String dataDir = Const.INPUT_PATH;
 
 		long start = System.currentTimeMillis();
 		Indexer indexer = new Indexer(indexDir);
-		int numIndexed;
+		int numIndexed = 0;
 
 		try {
 			numIndexed = indexer.index(dataDir, new TextFilesFilter());
+		} catch (Exception e) {
+			System.err.println( e.getMessage() );
 		} finally {
 			indexer.close();
 		}
@@ -65,17 +62,13 @@ public class Indexer {
 	}
 
 	public int index(String dataDir, FileFilter filter) throws Exception {
-		Path path = Paths.get(dataDir);
-
-		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
-			for (Path p : directoryStream) {
-				File f = p.toFile();
-
-				if(!f.isDirectory() && !f.isHidden() && f.exists() && f.canRead() && (filter == null || filter.accept(f))) {
-					indexFile( p );
-				}
+		File[] files = new File(dataDir).listFiles();
+		for (File f: files) {
+			if (!f.isDirectory() && !f.isHidden() && f.exists() && f.canRead() && (filter == null || filter.accept(f))) {
+				System.out.println( f.getName());
+				indexFile(f);
 			}
-		} catch (IOException ex) {}
+		}
 
 		return writer.numDocs();
 	}
@@ -86,19 +79,17 @@ public class Indexer {
 		}
 	}
 
-	protected Document getDocument(Path path) throws Exception {
+	protected Document getDocument(File file) throws Exception {
 		Document doc = new Document();
-
-		InputStream stream = Files.newInputStream(path);
-		doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))));
-		doc.add(new StringField("filename", path.toFile().getName(), Field.Store.YES));
-		doc.add(new StringField("fullpath", path.toFile().getCanonicalPath(), Field.Store.YES));
+		doc.add(new TextField("contents", new FileReader(file)));
+		doc.add(new StringField("filename", file.getName(), Field.Store.YES));
+		doc.add(new StringField("fullpath", file.getCanonicalPath(), Field.Store.YES));
 
 		return doc;
 	}
 
-	private void indexFile(Path path) throws Exception {
-		Document doc = getDocument(path);
+	private void indexFile(File file) throws Exception {
+		Document doc = getDocument(file);
 		writer.addDocument(doc);
 	}
 

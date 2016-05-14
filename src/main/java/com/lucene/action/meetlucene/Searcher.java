@@ -23,8 +23,8 @@ public class Searcher {
 
 	public static void main(String[] args) throws Exception {
 
-		String indexDir = Const.OUTPUT_PATH + "/MeetLucene";
-		String q = "LICENSE";
+		String indexDir = Const.OUTPUT_PATH;
+		String q = "patent";
 
 		search(indexDir, q);
 	}

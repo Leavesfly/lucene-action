@@ -5,9 +5,9 @@ package com.lucene.action.util;
  */
 public class Const {
 
-    public static final String PROJECT_PATH = "/Users/enosent/workspace/project/lucene-action";
+    public static final String PROJECT_PATH = System.getProperty("user.dir");
 
-    public static final String INPUT_PATH = PROJECT_PATH + "/src/main/java/com/lucene/action";
+    public static final String INPUT_PATH = PROJECT_PATH + "/data";
 
     public static final String OUTPUT_PATH = PROJECT_PATH + "/indexes";
 
